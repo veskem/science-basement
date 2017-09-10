@@ -51,7 +51,7 @@ while(keep_running):
     if (full_functional):
         results += format_f( drdaq.get_ext1() )          # temperature [degC]
         results += format_f( fdc2214.read_ch1() )        # capacitance [pF]
-        results += format_f( fdc2214.read_ch10() )        # capacitance diff [pF]
+        results += format_f( fdc2214.read_ch10() )       # capacitance diffrence [pF]
         results += format_f( ldc1000.read_inductance() ) # inductance [uH]
         results += format_f( ldc1000.read_impedance() )  # impedance [kOhm]
     else:
@@ -63,7 +63,12 @@ while(keep_running):
     
     # output data
     print(results[1:])
+
+    # write data to Wolfram Datadrop
+    tools.write_datadrop( drdaq.get_ext1(), fdc2214.read_ch1() )
     
     # give CPU some time before looping again
     # drivers need 0.01 sec for one measurement
-    time.sleep(0.1)
+    for i in range(30):
+        print('Time since next measurement: %d sec' % (30-i), end='\r', flush=True)
+        time.sleep(1)
