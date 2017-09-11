@@ -8,7 +8,7 @@ import signal
 
 import fdc2214
 import ldc1000
-import drdaq
+#import drdaq
 import tools
 import constants as const
 
@@ -35,13 +35,14 @@ signal.signal(signal.SIGINT, signal_handler)
 keep_running = True
 full_functional = True
 
-print("T[degC], C[pF], dC[pF], L[uH],  Z[kOHm]")
+#print("T[degC], C[pF], dC[pF], L[uH],  Z[kOHm]")
+print("C[pF], dC[pF], L[uH],  Z[kOHm]")
 
 # Initialize
 if (full_functional):
     ldc1000.config()
     fdc2214.config()
-    drdaq.init()
+#    drdaq.init()
 
 # Loop; break the loop with a keystroke
 while(keep_running):
@@ -49,13 +50,13 @@ while(keep_running):
     
     # measure data
     if (full_functional):
-        results += format_f( drdaq.get_ext1() )          # temperature [degC]
+#        results += format_f( drdaq.get_ext1() )          # temperature [degC]
         results += format_f( fdc2214.read_ch1() )        # capacitance [pF]
         results += format_f( fdc2214.read_ch10() )       # capacitance diffrence [pF]
         results += format_f( ldc1000.read_inductance() ) # inductance [uH]
         results += format_f( ldc1000.read_impedance() )  # impedance [kOhm]
     else:
-        results += format_f( tools.get_random() )
+#        results += format_f( tools.get_random() )
         results += format_f( tools.get_random() )
         results += format_f( tools.get_random() )
         results += format_f( tools.get_random() )
@@ -64,11 +65,6 @@ while(keep_running):
     # output data
     print(results[1:])
 
-    # write data to Wolfram Datadrop
-    tools.write_datadrop( drdaq.get_ext1(), fdc2214.read_ch1() )
-    
     # give CPU some time before looping again
-    # drivers need 0.01 sec for one measurement
-    for i in range(30):
-        print('Time since next measurement: %d sec' % (30-i), end='\r', flush=True)
-        time.sleep(1)
+    # drivers need 0.01 sec for one 
+    time.sleep(0.1)
