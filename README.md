@@ -13,10 +13,12 @@ Materials used in science-basement workshop
 
 ## Using the code
 Before running the code for first time, build drdaq driver:
+
     $ cd drdaq
     $ make
 
 To start the measurements, use Python 3: 
+
     $ python3 measure_service.py
 
 The code can be executed in a free-running mode, where instead of real sensors random number generator is used.
