@@ -72,6 +72,13 @@ short* get_data_block(USB_DRDAQ_INPUTS channel, uint32_t nSamples, uint32_t msFo
     return samples;
 }
 
+/* Make single light measurement */
+static PyObject* py_get_light(PyObject* self, PyObject* args) {
+    short value = get_data(USB_DRDAQ_CHANNEL_LIGHT);
+    double light = value / 10.0;
+    return Py_BuildValue("d", light);
+}
+
 /* Make single temperature measurement */
 static PyObject* py_get_temperature(PyObject* self, PyObject* args) {
     short value = get_data(USB_DRDAQ_CHANNEL_TEMP);
@@ -130,6 +137,16 @@ static PyObject* py_set_pwm(PyObject* self, PyObject* args) {
         
     return Py_BuildValue("s", "0");
 }
+
+static PyObject* py_set_led(PyObject* self, PyObject* args) {
+    int red, green, blue;
+    if (!PyArg_ParseTuple(args, "iii", &red, &green, &blue))
+        return NULL;
+    if (red >= 0 && red <= 255 && green >= 0 && green <= 255 && blue >= 0 && blue <= 255)
+        UsbDrDaqSetRGBLED(g_handle, (unsigned int)red, (unsigned int)green, (unsigned int)blue);
+
+    return Py_BuildValue("s", "0");
+}
             
 static PyObject* py_led_on(PyObject* self, PyObject* args) {
 	unsigned short red = 255;
@@ -166,6 +183,7 @@ static PyObject* py_close_drdaq(PyObject* self, PyObject* args) {
 static PyMethodDef drdaq_methods[] = {
     {"init", py_init_drdaq, METH_VARARGS},
     {"close", py_close_drdaq, METH_VARARGS},
+    {"get_light", py_get_light, METH_VARARGS},
     {"get_temperature", py_get_temperature, METH_VARARGS},
     {"get_ext1", py_get_ext1, METH_VARARGS},
     {"get_pH", py_get_pH, METH_VARARGS},
@@ -174,7 +192,8 @@ static PyMethodDef drdaq_methods[] = {
     {"led_off", py_led_off, METH_VARARGS},
     {"led_blink", py_led_blink, METH_VARARGS},
     {"set_output", py_set_output, METH_VARARGS},
-    {"set_pwm", py_set_pwm, METH_VARARGS},       
+    {"set_pwm", py_set_pwm, METH_VARARGS},
+    {"set_led", py_set_led, METH_VARARGS},
     {NULL, NULL}
 };
 
