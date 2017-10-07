@@ -10,7 +10,7 @@ buffer_size = 240   # samples
 time_step = 0.5     # sec, plotting takes ~0.4
 
 time_min = 0; time_max = buffer_size * time_step;
-temp_min = 18; temp_max = 26;
+temp_min = 18; temp_max = 28;
 
 buffer = rb.RingBuffer(buffer_size)
 serial = sr.SerialReader(9600, 'COM21')

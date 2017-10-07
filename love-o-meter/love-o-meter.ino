@@ -27,6 +27,11 @@ void setup() {
         pinMode(pin ,OUTPUT);
         digitalWrite(pin, LOW);
     }
+
+    pinMode(A4 ,OUTPUT);
+    digitalWrite(A4, LOW);
+    pinMode(A5 ,OUTPUT);
+    digitalWrite(A5, LOW);
 }
 
 void loop() {
@@ -56,12 +61,22 @@ void loop() {
     // ...serial port     
     Serial.println(temperature);
 
-    // ...LED strip 
-    for (int i = 1; i <= 6; ++i) {
+    // ...LED strip
+
+    if (temperature >= baseline_temp + 1 * temp_resolution)
+        digitalWrite(A4, HIGH);
+    else
+        digitalWrite(A4, LOW);
+    if (temperature >= baseline_temp + 2 * temp_resolution)
+        digitalWrite(A5, HIGH);
+    else
+        digitalWrite(A5, LOW);    
+    
+    for (int i = 3; i <= 8; ++i) {
         if (temperature >= baseline_temp + i * temp_resolution)
-            digitalWrite(min_led + (i-1), HIGH);
+            digitalWrite(min_led + (i-3), HIGH);
         else
-            digitalWrite(min_led + (i-1), LOW);
+            digitalWrite(min_led + (i-3), LOW);
     }
 
     // wait before the next loop
