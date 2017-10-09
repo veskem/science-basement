@@ -17,6 +17,9 @@ class SerialReader():
         line = self.ser.readline()
         return float(line[:-2])
         
+    def write_line(self, data)
+        self.ser.write('\n' + data)
+        
     def read_byte(self):
         return self.ser.read(1)
         

@@ -40,7 +40,7 @@ signal.signal(signal.SIGINT, signal_handler)
 keep_running = True
 full_functional = True
 
-print("T[degC], C[pF], dC[pF], L[uH],  Z[kOHm], red, green, blue")
+print("light, T[degC], C[pF], dC[pF], L[uH],  Z[kOHm], red, green, blue")
 
 # Initialize
 if (full_functional):
@@ -56,7 +56,8 @@ while(keep_running):
     # measure sensors
     if (full_functional):
         light = drdaq.get_light()      # light intensity [%]
-        T = max(drdaq.get_ext1(), drdaq.get_temperature()+T_correction)  # temperature [degC]
+        T = drdaq.get_ext1()  # temperature [degC]
+        #T = max(drdaq.get_ext1(), drdaq.get_temperature()+T_correction)  # temperature [degC]
         #C = fdc2214.read_ch1()        # capacitance [pF]
         #dC = fdc2214.read_ch10()      # capacitance diffrence [pF]
         L = ldc1000.read_inductance()  # inductance [uH]
