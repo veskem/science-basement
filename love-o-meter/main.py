@@ -11,7 +11,8 @@ buffer_size = 240   # samples
 time_step = 0.5     # sec, plotting takes ~0.4
 
 time_min = 0; time_max = buffer_size * time_step;
-temp_min = 18; temp_max = 28;
+#temp_min = 18; temp_max = 28;
+temp_min = 0; temp_max = 1;
 
 #drdaq.init()
 buffer = rb.RingBuffer(buffer_size)
@@ -23,7 +24,7 @@ plot.format_y(temp_min, temp_max, 'Temperature [$^\circ$C]')
 t0 = time.time()
 while(plot.opened()):
     t1 = time.time()
-    temperature = tools.get_random()
+    temperature = 30.3# * tools.get_random()
     #temperature = max(drdaq.get_ext1(), drdaq.get_temperature())  # [degC]
     #temperature = serial.read_line()
     serial.write_line("%.1f" % temperature)

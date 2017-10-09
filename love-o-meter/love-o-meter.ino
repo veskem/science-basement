@@ -18,6 +18,8 @@ const int n_samples = 100;  // # samples to be averaged
 const int min_led = 8;      // pin holding the coldest led
 const int max_led = 13;     // pin holding the hottest led
 
+
+
 void setup() {
     lcd.begin(16, 2);   // Setup # LCD columns and rows
     Serial.begin(9600); // specify serial port baud rate
@@ -27,14 +29,16 @@ void setup() {
         pinMode(pin ,OUTPUT);
         digitalWrite(pin, LOW);
     }
-
-    pinMode(A4 ,OUTPUT);
-    digitalWrite(A4, LOW);
-    pinMode(A5 ,OUTPUT);
-    digitalWrite(A5, LOW);
+    for(int pin = A4; pin <= A5; pin++){
+        pinMode(pin ,OUTPUT);
+        digitalWrite(pin, LOW);
+    }
+    
+    while (Serial.available() > 0);
 }
 
 void loop() {
+    /*
     // make several measurements to reduce the noise
     float temperature = 0.0;
     for (int i = 0; i < n_samples; ++i) {
@@ -44,8 +48,18 @@ void loop() {
         delay(0.5);
     }
     temperature *= 1.0 / n_samples;
+    */
+
+    float temperature = 0.0;
+    // read temperature from serial port
+    if (Serial.available() > 0)
+        temperature = Serial.parseFloat();
     
     // write the temperature to
+    
+    // ...serial port     
+    //Serial.println(temperature);
+    
     // ...LCD                              
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -58,20 +72,14 @@ void loop() {
     lcd.print(millis() / 1000, 10);
     lcd.print("sec");
 
-    // ...serial port     
-    Serial.println(temperature);
+    // ...and LED strip
 
-    // ...LED strip
-
-    if (temperature >= baseline_temp + 1 * temp_resolution)
-        digitalWrite(A4, HIGH);
-    else
-        digitalWrite(A4, LOW);
-    if (temperature >= baseline_temp + 2 * temp_resolution)
-        digitalWrite(A5, HIGH);
-    else
-        digitalWrite(A5, LOW);    
-    
+    for (int i = 1; i <= 2; ++i) {
+        if (temperature >= baseline_temp + i * temp_resolution)
+            digitalWrite(A4 + (i-1), HIGH);
+        else
+            digitalWrite(A4 + (i-1), LOW);
+    }
     for (int i = 3; i <= 8; ++i) {
         if (temperature >= baseline_temp + i * temp_resolution)
             digitalWrite(min_led + (i-3), HIGH);
