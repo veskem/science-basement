@@ -43,7 +43,6 @@ sleep_time = 10.0 # 10 second before runs
 full_functional = True
 sound_file = "/Volumes/Transcend/TSB/workshop/mihkel/science-basement/mac/smb_stage_clear.wav"
 #sound_file = "/Volumes/Transcend/TSB/workshop/mihkel/science-basement/mac/mk64_mario09.wav"
-print("L[uH],  Z[kOHm]")
 # Initialize
 if (full_functional):
     ldc1000.config()
@@ -59,6 +58,28 @@ cmd_to_execute = "python3 /home/robot/motor_movement/angle_example.py"
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect(server, username=username, password=password)
 '''
+
+imax = 30
+L_min = math.inf
+L_max = -math.inf
+print("Calibrating for " + str(imax*0.1) + " seconds, please wait...")
+for i in range(imax):
+    # measure sensors
+    if (full_functional):
+        L = ldc1000.read_inductance()  # inductance [uH]
+    else:
+        L = tools.get_random()
+    if (L < L_min): L_min = L
+    if (L > L_max): L_max = L
+    time.sleep(0.1)
+
+L_0 = (L_max + L_min)/2
+L_step = L_max - L_min
+
+print("Calibration ready: L_0 = " + format_d(L_0) + ", L_step = " + format_d(L_step))
+time.sleep(0.5)
+
+print("L[uH],  Z[kOHm]")
 
 # Loop; break the loop with a keystroke
 while(keep_running):    
