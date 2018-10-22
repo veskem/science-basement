@@ -7,21 +7,19 @@ import numpy as np
 import pi_spi
 import fdc2214 as fdc
 
-enable_plot = False
+enable_plot = True
+time_step = 0.1     # sec, plotting takes ~0.4
+buffer_size = 200   # nr of samples
+
 if (enable_plot):
     import dynamic_plot as dp
 
 fdc2214 = fdc.FDC2214(115200, '/dev/ttyACM0')
 
-C1 = 0.3
-C2 = 1
-
-print ("Press CTRL C to exit")
+print ("Press CTRL-C to exit")
 try:
-    time_step = 1.0     # sec, plotting takes ~0.4
-    buffer_size = 200   # samples
-
-    time_min = 0; time_max = buffer_size * time_step;
+    time_min = 0
+    time_max = buffer_size * time_step
     C_min = -3; C_max = 3;
 
     if (enable_plot):
@@ -32,18 +30,36 @@ try:
 
     dout = pi_spi.PiSpi_8KO(True)
     dout.write(0)
+    active_cntr = 0
 
     keep_looping = True
     while(keep_looping):
         t1 = time.time()
 
-        C = fdc2214.read_ch1()
-        if (abs(C) <= C1):
-            dout.write(0)
-        elif (abs(C) >= C2):
-            dout.write(255)
+        # read parameters from file
+        filehandle = open('edit.me', 'r')
+        data = filehandle.readlines()
+        filehandle.close()
 
-        print("\rC = %.2f pF" % C, end='')
+        if (len(data) < 2):
+            print("Invalid data in file", data_file_name)
+            sys.exit(0)
+        
+        # parse zeroing & threshold capacitance and # counts needed to activate output
+        [C0, C1, cntr_max] = [float(data[0].strip()), float(data[1].strip()), int(data[2].strip())]
+
+        # based on capacitance value, decide either to activate or close output
+        C = round(fdc2214.read_ch1(), 3) - C0
+        if (abs(C) < C1 and active_cntr != 0):
+            active_cntr = 0
+            dout.write(0)
+        else:
+            active_cntr += 1
+            if (active_cntr > cntr_max):
+                active_cntr = 0
+                dout.write(255)
+
+        print("\rC = %.3f pF" % C, end='')
         
         # add measurement to the graph
         if(enable_plot):
